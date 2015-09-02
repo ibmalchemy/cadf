@@ -1,0 +1,546 @@
+* Logtrail Event Format
+** Event
+    | Name          | Type           | Required | Description     |
+    |---------------+----------------+----------+-----------------|
+    | id            | string         | Yes      | id              |
+    | typeURI       | string         | Yes      | type URI        |
+    | eventType     | string         | Yes      | event type      |
+    | eventTime     | Timestamp      | Yes      | event time      |
+    | action        | string         | Yes      | action          |
+    | outcome       | string         | Yes      | outcome         |
+    | message       | string         | Yes      | message         |
+    | initiator     | Resource       | Yes      | initiator       |
+    | target        | Resource       | Yes      | target          |
+    | observer      | Resource       | Yes      | observer        |
+    | reason        | Reason         | No       | reason          |
+    | severity      | string         | No       | event severity |
+    | name          | string         | No       | event name      |
+    | tags          | []string       | No       | tags            |
+    | attachments   | []Attachment   | No       | attachments     |
+    | reporterchain | []Reporterstep | No       | reporterchain   |
+
+** Resource
+   | Name       | Type       | Required | Description                        |
+   |------------+------------+----------+------------------------------------|
+   | id         | string     | Yes      | id of resource                     |
+   | typeURI    | string     | Yes      | typeURI of resource                |
+   | name       | string     | No       | name of resource                   |
+   | host       | Host       | No       | domain to qualify name of resource |
+   | credential | Credential | No       | security credential of resource    |
+
+** Host
+   | Name     | Type   | Required | Description        |
+   |----------+--------+----------+--------------------|
+   | id       | string | Yes      | id of host         |
+   | address  | string | No       | address of host    |
+   | agent    | string | No       | agent name of host |
+   | platform | string | No       | platform of host   |
+
+** Credential
+   | Name  | Type   | Required | Description    |
+   |-------+--------+----------+----------------|
+   | token | string | Yes      | value of token |
+   | type  | string | Yes      | type of token  |
+
+** Timestamp
+   Serialize and deserialize in format of =2006-01-02T15:04:05.999Z=.
+** Reason
+   | Name       | Type   | Required | Description |
+   |------------+--------+----------+-------------|
+   | reasonCode | string | No       | reason code |
+   | reasonType | string | No       | reason type |
+
+** Attachment
+   | Name        | Type   | Required | Description   |
+   |-------------+--------+----------+---------------|
+   | typeURI     | string | Yes      | type URI      |
+   | contentType | string | Yes      | content type  |
+   | content     | string | Yes      | content value |
+
+** Reporterstep
+   | Name         | Type      | Required | Description   |
+   |--------------+-----------+----------+---------------|
+   | role         | string    | Yes      | role          |
+   | reporterId   | string    | Yes      | reporter id   |
+   | reporterTime | Timestamp | Yes      | reporter time |
+
+* Logtrail Event Format Sample
+  #+BEGIN_SRC json
+    {
+      "message": "...",
+      "typeURI": "http:\/\/schemas.dmtf.org\/cloud\/audit\/1.0\/event",
+      "id": "logtrail:a80dc5ee-be83-48ad-ad5e-6577f2217637",
+      "eventType": "activity",
+      "eventTime": "2015-08-20T00:07:49.214Z",
+      "action": "read",
+      "outcome": "success",
+      "name": "...",
+      "reason": {
+        "reasonCode": "200",
+        "reasonType": "HTTP"
+      },
+      "initiator": {
+        "id": "bluemix:328bd20e-4652-11e5-87d5-3c15c2c1e1ae",
+        "typeURI": "\/iauth",
+        "name": "tuhongj@cn.ibm.com",
+        "credential": {
+          "type": "token",
+          "token": "eyJhbGciOiJI...."
+        },
+        "host": {
+          "agent": "python-novaclient",
+          "address": "9.26.27.109"
+        }
+      },
+      "target": {
+        "id": "openstack:07a00f64-4653-11e5-a4fc-3c15c2c1e1ae",
+        "typeURI": "vms\/cloud",
+        "host": {
+          "address": "9.110.51.34"
+        },
+        "name": "\/v2\/56600971-90f3-4370-807f-ab79339381a9\/servers"
+      },
+      "observerId": "logtrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae",
+      "reporterchain": [
+        {
+          "reporterTime": "2015-08-20T00:07:49.214Z",
+          "role": "relay",
+          "reporterId": "logtrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae"
+        }
+      ],
+      "attachments": [
+        {
+          "typeURI": "request\/header",
+          "contentType": "json",
+          "content": "..."
+        },
+        {
+          "typeURI": "request\/body",
+          "contentType": "json",
+          "content": "..."
+        },
+        {
+          "typeURI": "response\/header",
+          "contentType": "json",
+          "content": "..."
+        },
+        {
+          "typeURI": "response\/body",
+          "contentType": "json",
+          "content": "..."
+        }
+      ],
+      "tags": [
+        "correlation_id?value=openstack:bcac04dc-e0be-4110-862c-347088a7836a"
+      ]
+    }
+  #+END_SRC
+* About eventType
+  According cadf specification, =actionType= can be:
+  #+BEGIN_EXAMPLE
+  activity, monitor, control
+  #+END_EXAMPLE
+  We use =activity=.
+* About action
+
+  Map http method with cadf action as below:
+  |-------------+--------|
+  | HTTP METHOD | ACTION |
+  |-------------+--------|
+  | POST        | create |
+  | PUT         | update |
+  | PATCH       | update |
+  | DELETE      | delete |
+  | HEAD        | read   |
+  | GET         | read   |
+  | OPTIONS     | read   |
+
+* About initiator
+  We use initiator to describe the =organization= or =space= which
+  send the request. Here =id= is the orgnization id or space id,
+  =name= is the user name.
+* About attachments
+  We have four attachments defined, for:
+  1. Request header,
+  2. Request body,
+  3. Response header,
+  4. Response body
+  5. latencies
+  6. api
+* Manual steps to try
+  1. get space or organization id, and access token
+     #+BEGIN_SRC sh
+       curl -XPOST -d'user=<user>&passwd=<passwd>&organization=edge&space=service' https://logmet.stage1.ng.bluemix.net/login
+       =>
+       {
+           "access_token": "...",
+           "logging_token": "...",
+           "organization_id": "...",
+           "space_id": "..."
+       }
+     #+END_SRC
+  2. set id, token
+     #+BEGIN_SRC sh
+       id="..."
+       token="..."
+     #+END_SRC
+  3. Create logtrail event
+     #+BEGIN_SRC sh
+       curl -i --header "X-Auth-Token:${token}" --header "X-Auth-Project-Id:${id}" \
+            -XPOST -d@logtrail_cadf.json \
+            https://logmet.stage1.ng.bluemix.net/elasticsearch/logstash-${id}-2015.08.20/logtrail
+     #+END_SRC
+  4. Search
+     #+BEGIN_SRC sh
+       curl -i --header "X-Auth-Token:${token}" --header "X-Auth-Project-Id:${id}" \
+            -XPOST -d@query.json \
+            https://logmet.stage1.ng.bluemix.net/elasticsearch/logstash-${id}-2015.08.20/logtrail/_search
+     #+END_SRC
+     Here =query.json= is:
+     #+BEGIN_SRC json
+       {
+         "sort": [
+           {
+             "eventTime": {
+               "ignore_unmapped": true,
+               "order": "desc"
+             }
+           },
+           {
+             "eventTime": {
+               "ignore_unmapped": true,
+               "order": "desc"
+             }
+           }
+         ],
+         "size": 500,
+         "highlight": {
+           "post_tags": [
+             "@end-highlight@"
+           ],
+           "pre_tags": [
+             "@start-highlight@"
+           ],
+           "fragment_size": 2147483647,
+           "fields": null
+         },
+         "query": {
+           "filtered": {
+             "filter": {
+               "bool": {
+                 "must": [
+                   {
+                     "range": {
+                       "eventTime": {
+                         "to": 1440058353504,
+                         "from": 1439885553504
+                       }
+                     }
+                   }
+                 ]
+               }
+             },
+             "query": {
+               "bool": {
+                 "should": [
+                   {
+                     "query_string": {
+                       "query": "*"
+                     }
+                   }
+                 ]
+               }
+             }
+           }
+         }
+       }
+     #+END_SRC
+  5. You can also login logmet to check result
+
+* Logmet dashboard customization
+  The default logmet kibana dashboard is used for logs display. Here
+  we give a steps to customize dashboard for logtrail.
+  1. Login logmet with kibana
+  2. Save below to a file, say logtrail.json:
+     #+BEGIN_SRC json
+       {
+         "title": "logtrail",
+         "style": "dark",
+         "stack_id": "default",
+         "services": {
+           "query": {
+             "list": {
+               "0": {
+                 "enable": true,
+                 "type": "lucene",
+                 "query": "*",
+                 "pin": false,
+                 "id": 0,
+                 "color": "#7EB26D",
+                 "alias": ""
+               }
+             },
+             "ids": [
+               0
+             ]
+           },
+           "filter": {
+             "list": {
+               "0": {
+                 "id": 0,
+                 "alias": "",
+                 "active": true,
+                 "mandate": "must",
+                 "to": "now",
+                 "from": "now-2d",
+                 "field": "eventTime",
+                 "type": "time"
+               }
+             },
+             "ids": [
+               0
+             ]
+           }
+         },
+         "rows": [
+           {
+             "title": "Histogram",
+             "panels": [
+               {
+                 "zoomlinks": true,
+                 "zerofill": true,
+                 "y_format": "none",
+                 "y-axis": true,
+                 "x-axis": true,
+                 "value_field": null,
+                 "type": "histogram",
+                 "tooltip": {
+                   "value_type": "cumulative",
+                   "query_as_alias": true
+                 },
+                 "title": "Events by Time",
+                 "timezone": "browser",
+                 "time_field": "eventTime",
+                 "stack": true,
+                 "spyable": true,
+                 "span": 12,
+                 "show_query": true,
+                 "scaleSeconds": false,
+                 "scale": 1,
+                 "resolution": 100,
+                 "queries": {
+                   "mode": "all",
+                   "ids": [
+                     0
+                   ]
+                 },
+                 "points": false,
+                 "pointradius": 5,
+                 "percentage": false,
+                 "options": true,
+                 "mode": "count",
+                 "loadingEditor": false,
+                 "linewidth": 3,
+                 "lines": false,
+                 "legend_counts": true,
+                 "legend": true,
+                 "intervals": [
+                   "auto",
+                   "1s",
+                   "1m",
+                   "5m",
+                   "10m",
+                   "30m",
+                   "1h",
+                   "3h",
+                   "12h",
+                   "1d",
+                   "1w",
+                   "1y"
+                 ],
+                 "interval": "30m",
+                 "interactive": true,
+                 "grid": {
+                   "min": 0,
+                   "max": null
+                 },
+                 "fill": 0,
+                 "editable": true,
+                 "derivative": false,
+                 "bars": true,
+                 "auto_int": true,
+                 "annotate": {
+                   "sort": [
+                     "_score",
+                     "desc"
+                   ],
+                   "size": 20,
+                   "query": "*",
+                   "field": "_type",
+                   "enable": false
+                 }
+               }
+             ],
+             "notice": false,
+             "height": "150px",
+             "editable": true,
+             "collapse": false,
+             "collapsable": true
+           },
+           {
+             "title": "Events",
+             "panels": [
+               {
+                 "type": "table",
+                 "trimFactor": 700,
+                 "title": "All events",
+                 "timeField": "eventTime",
+                 "style": {
+                   "font-size": "8pt"
+                 },
+                 "status": "Stable",
+                 "spyable": true,
+                 "span": 12,
+                 "sortable": true,
+                 "sort": [
+                   "message",
+                   "desc"
+                 ],
+                 "size": 100,
+                 "queries": {
+                   "mode": "all",
+                   "ids": [
+                     0
+                   ]
+                 },
+                 "paging": true,
+                 "pages": 5,
+                 "overflow": "min-height",
+                 "offset": 0,
+                 "normTimes": true,
+                 "localTime": true,
+                 "highlight": [],
+                 "header": true,
+                 "group": [
+                   "default"
+                 ],
+                 "fields": [
+                   "eventTime",
+                   "eventType",
+                   "initiator.name",
+                   "initiator.credential.type",
+                   "target.host.address",
+                   "observerId"
+                 ],
+                 "field_list": false,
+                 "error": false,
+                 "editable": true,
+                 "all_fields": false
+               }
+             ],
+             "notice": false,
+             "height": "350px",
+             "editable": true,
+             "collapse": false,
+             "collapsable": true
+           }
+         ],
+         "refresh": "1m",
+         "pulldowns": [
+           {
+             "type": "query",
+             "remember": 1000,
+             "query": "*",
+             "pinned": true,
+             "notice": false,
+             "history": [
+               "loglevel:ERROR",
+               "loglevel:WARNING",
+               "loglevel:AUDIT",
+               "loglevel:DEBUG",
+               "loglevel:TRACE",
+               "loglevel:INFO"
+             ],
+             "enable": true,
+             "collapse": true
+           },
+           {
+             "type": "filtering",
+             "notice": true,
+             "enable": true,
+             "collapse": false
+           }
+         ],
+         "panel_hints": true,
+         "nav": [
+           {
+             "type": "timepicker",
+             "timefield": "eventTime",
+             "time_options": [
+               "5m",
+               "15m",
+               "1h",
+               "6h",
+               "12h",
+               "24h",
+               "2d",
+               "7d",
+               "30d"
+             ],
+             "status": "Stable",
+             "refresh_intervals": [
+               "5s",
+               "10s",
+               "30s",
+               "1m",
+               "5m",
+               "15m",
+               "30m",
+               "1h",
+               "2h",
+               "1d"
+             ],
+             "now": true,
+             "notice": false,
+             "filter_id": 0,
+             "enable": true,
+             "collapse": false
+           }
+         ],
+         "loader": {
+           "show_home": true,
+           "save_temp_ttl_enable": true,
+           "save_temp_ttl": "30d",
+           "save_temp": true,
+           "save_local": true,
+           "save_gist": false,
+           "save_elasticsearch": true,
+           "save_default": true,
+           "load_local": true,
+           "load_gist": true,
+           "load_elasticsearch_size": 20,
+           "load_elasticsearch": true,
+           "hide": false
+         },
+         "index": {
+           "warm_fields": true,
+           "pattern": "[logstash-9d8cbf6b-7b4f-43b9-ab44-46d415fe2b57-]YYYY.MM.DD",
+           "interval": "day",
+           "default": "NO_TIME_FILTER_OR_INDEX_PATTERN_NOT_MATCHED"
+         },
+         "failover": false,
+         "editable": true
+       }
+
+     #+END_SRC
+  3. Replace 9d8cbf6b-7b4f-43b9-ab44-46d415fe2b57 with your
+     organization id or space id
+  4. Load the file to kibana dashboard
+
+* How to put logtrail event to logmet
+  There are two ways to do it:
+  1. Use elasticsearch API exposed by logmet directly
+  2. Use the super user, to do transform in logmet server side
+
+     The code maybe running between kafka to elasticsearch or before
+     enter into kafka.
