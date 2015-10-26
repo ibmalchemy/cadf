@@ -1,4 +1,4 @@
-* Logtrail Event Format
+* Accesstrail Event Format
 ** Event
     | Name          | Type           | Required | Description     |
     |---------------+----------------+----------+-----------------|
@@ -64,12 +64,12 @@
    | reporterId   | string    | Yes      | reporter id   |
    | reporterTime | Timestamp | Yes      | reporter time |
 
-* Logtrail Event Format Sample
+* Accesstrail Event Format Sample
   #+BEGIN_SRC json
     {
       "message": "...",
       "typeURI": "http:\/\/schemas.dmtf.org\/cloud\/audit\/1.0\/event",
-      "id": "logtrail:a80dc5ee-be83-48ad-ad5e-6577f2217637",
+      "id": "accesstrail:a80dc5ee-be83-48ad-ad5e-6577f2217637",
       "eventType": "activity",
       "eventTime": "2015-08-20T00:07:49.214Z",
       "action": "read",
@@ -100,12 +100,12 @@
         },
         "name": "\/v2\/56600971-90f3-4370-807f-ab79339381a9\/servers"
       },
-      "observerId": "logtrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae",
+      "observerId": "accesstrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae",
       "reporterchain": [
         {
           "reporterTime": "2015-08-20T00:07:49.214Z",
           "role": "relay",
-          "reporterId": "logtrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae"
+          "reporterId": "accesstrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae"
         }
       ],
       "attachments": [
@@ -184,10 +184,10 @@
        id="..."
        token="..."
      #+END_SRC
-  3. Create logtrail event
+  3. Create accesstrail event
      #+BEGIN_SRC sh
        curl -i --header "X-Auth-Token:${token}" --header "X-Auth-Project-Id:${id}" \
-            -XPOST -d@logtrail_cadf.json \
+            -XPOST -d@accesstrail_cadf.json \
             https://logmet.stage1.ng.bluemix.net/elasticsearch/logstash-${id}-2015.08.20/logtrail
      #+END_SRC
   4. Search
@@ -259,12 +259,12 @@
 
 * Logmet dashboard customization
   The default logmet kibana dashboard is used for logs display. Here
-  we give a steps to customize dashboard for logtrail.
+  we give a steps to customize dashboard for accesstrail.
   1. Login logmet with kibana
-  2. Save below to a file, say logtrail.json:
+  2. Save below to a file, say accesstrail.json:
      #+BEGIN_SRC json
        {
-         "title": "logtrail",
+         "title": "accesstrail",
          "style": "dark",
          "stack_id": "default",
          "services": {
@@ -537,7 +537,7 @@
      organization id or space id
   4. Load the file to kibana dashboard
 
-* How to put logtrail event to logmet
+* How to put accesstrail event to logmet
   There are two ways to do it:
   1. Use elasticsearch API exposed by logmet directly
   2. Use the super user, to do transform in logmet server side
