@@ -26,24 +26,24 @@ import (
 // | api           | Api            | No       | api info        |
 // | latencies     | Latencies      | No       | latencies       |
 type Event struct {
-	Id            string         `json:"id"`
-	TypeURI       string         `json:"typeURI"`
-	EventType     string         `json:"eventType"`
-	EventTime     Timestamp      `json:"eventTime"`
-	Action        string         `json:"action"`
-	Outcome       string         `json:"outcome"`
-	Message       string         `json:"message"`
-	Initiator     Resource       `json:"initiator"`
-	Target        Resource       `json:"target"`
-	Observer      Resource       `json:"observer"`
-	Reason        Reason         `json:"reason"`
-	Severity      string         `json:"severity"`
-	Name          string         `json:"name"`
-	Tags          []string       `json:"tags"`
-	Attachments   []Attachment   `json:"attachments"`
-	Reporterchain []Reporterstep `json:"reporterchain"`
-	Api           Api            `json:"api"`
-	Latencies     Latencies      `json:"latencies"`
+	Id            string         `json:"id,omitempty"`
+	TypeURI       string         `json:"typeURI,omitempty"`
+	EventType     string         `json:"eventType,omitempty"`
+	EventTime     Timestamp      `json:"eventTime,omitempty"`
+	Action        string         `json:"action,omitempty"`
+	Outcome       string         `json:"outcome,omitempty"`
+	Message       string         `json:"message,omitempty"`
+	Initiator     Resource       `json:"initiator,omitempty"`
+	Target        Resource       `json:"target,omitempty"`
+	Observer      Resource       `json:"observer,omitempty"`
+	Reason        Reason         `json:"reason,omitempty"`
+	Severity      string         `json:"severity,omitempty"`
+	Name          string         `json:"name,omitempty"`
+	Tags          []string       `json:"tags,omitempty"`
+	Attachments   []Attachment   `json:"attachments,omitempty"`
+	Reporterchain []Reporterstep `json:"reporterchain,omitempty"`
+	Api           Api            `json:"api,omitempty"`
+	Latencies     Latencies      `json:"latencies,omitempty"`
 }
 
 // | Name       | Type       | Required | Description                        |
@@ -54,11 +54,11 @@ type Event struct {
 // | host       | Host       | No       | domain to qualify name of resource |
 // | credential | Credential | No       | security credential of resource    |
 type Resource struct {
-	Id         string     `json:"id"`
-	TypeURI    string     `json:"typeURI"`
-	Name       string     `json:"name"`
-	Host       Host       `json:"host"`
-	Credential Credential `json:"credential"`
+	Id         string     `json:"id,omitempty"`
+	TypeURI    string     `json:"typeURI,omitempty"`
+	Name       string     `json:"name,omitempty"`
+	Host       Host       `json:"host,omitempty"`
+	Credential Credential `json:"credential,omitempty"`
 }
 
 // | Name     | Type   | Required | Description        |
@@ -68,9 +68,9 @@ type Resource struct {
 // | agent    | string | No       | agent name of host |
 // | platform | string | No       | platform of host   |
 type Host struct {
-	Id      string `json:"id"`
-	Address string `json:"address"`
-	Agent   string `json:"agent"`
+	Id      string `json:"id,omitempty"`
+	Address string `json:"address,omitempty"`
+	Agent   string `json:"agent,omitempty"`
 }
 
 // | Name  | Type   | Required | Description    |
@@ -78,8 +78,8 @@ type Host struct {
 // | token | string | Yes      | value of token |
 // | type  | string | Yes      | type of token  |
 type Credential struct {
-	Token string `json:"token"`
-	Type  string `json:"type"`
+	Token string `json:"token,omitempty"`
+	Type  string `json:"type,omitempty"`
 }
 
 type Timestamp struct {
@@ -100,8 +100,8 @@ func (t *Timestamp) UnmarshalJSON(data []byte) (err error) {
 // | reasonCode | string | No       | reason code |
 // | reasonType | string | No       | reason type |
 type Reason struct {
-	ReasonCode string `json:"reasonCode"`
-	ReasonType string `json:"reasonType"`
+	ReasonCode string `json:"reasonCode,omitempty"`
+	ReasonType string `json:"reasonType,omitempty"`
 }
 
 // | Name        | Type   | Required | Description   |
@@ -111,9 +111,9 @@ type Reason struct {
 // | content     | string | Yes      | content value |
 
 type Attachment struct {
-	TypeURI     string `json:"typeURI"`
-	ContentType string `json:"contentType"`
-	Content     string `json:"content"`
+	TypeURI     string `json:"typeURI,omitempty"`
+	ContentType string `json:"contentType,omitempty"`
+	Content     string `json:"content,omitempty"`
 }
 
 // | Name         | Type      | Required | Description   |
@@ -122,23 +122,23 @@ type Attachment struct {
 // | reporterId   | string    | Yes      | reporter id   |
 // | reporterTime | Timestamp | Yes      | reporter time |
 type Reporterstep struct {
-	Role         string    `json:"role"`
-	ReporterId   string    `json:"reporterId"`
-	ReporterTime Timestamp `json:"reportedTime"`
+	Role         string    `json:"role,omitempty"`
+	ReporterId   string    `json:"reporterId,omitempty"`
+	ReporterTime Timestamp `json:"reportedTime,omitempty"`
 }
 
 type Latencies struct {
-	Request  time.Duration `json:"request"`
-	Response time.Duration `json:"response"`
-	Proxy    time.Duration `json:"proxy"`
+	Request  time.Duration `json:"request,omitempty"`
+	Response time.Duration `json:"response,omitempty"`
+	Proxy    time.Duration `json:"proxy,omitempty"`
 }
 
 type Api struct {
-	TargetUrl string    `json:"targetUrl"`
-	PublicDns string    `json:"publicDns"`
-	Name      string    `json:"name"`
-	Id        string    `json:"id"`
-	CreatedAt Timestamp `json:"createdAt"`
+	TargetUrl string    `json:"targetUrl,omitempty"`
+	PublicDns string    `json:"publicDns,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Id        string    `json:"id,omitempty"`
+	CreatedAt Timestamp `json:"createdAt,omitempty"`
 }
 
 func (event *Event) String() string {
