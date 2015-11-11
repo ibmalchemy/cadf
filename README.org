@@ -66,105 +66,106 @@
 
 * CADF Event Format Sample
   #+BEGIN_SRC json
-    {
-      "message": "...",
-      "typeURI": "http:\/\/schemas.dmtf.org\/cloud\/audit\/1.0\/event",
-      "id": "accesstrail:a80dc5ee-be83-48ad-ad5e-6577f2217637",
-      "eventType": "activity",
-      "eventTime": "2015-08-20T00:07:49.214Z",
-      "action": "read",
-      "outcome": "success",
-      "name": "...",
-      "reason": {
-        "reasonCode": "200",
-        "reasonType": "HTTP"
-      },
-      "initiator": {
-        "id": "bluemix:328bd20e-4652-11e5-87d5-3c15c2c1e1ae",
-        "typeURI": "\/iauth",
-        "name": "tuhongj@cn.ibm.com",
-        "credential": {
-          "type": "token",
-          "token": "eyJhbGciOiJI...."
-        },
-        "host": {
-          "agent": "python-novaclient",
-          "address": "9.26.27.109"
+        {
+          "message": "...",
+          "typeURI": "http:\/\/schemas.dmtf.org\/cloud\/audit\/1.0\/event",
+          "id": "accesstrail:a80dc5ee-be83-48ad-ad5e-6577f2217637",
+          "eventType": "activity",
+          "eventTime": "2015-08-20T00:07:49.214Z",
+          "action": "read",
+          "outcome": "success",
+          "name": "...",
+          "reason": {
+            "reasonCode": "200",
+            "reasonType": "HTTP"
+          },
+          "initiator": {
+            "id": "bluemix:328bd20e-4652-11e5-87d5-3c15c2c1e1ae",
+            "typeURI": "\/iauth",
+            "name": "tuhongj@cn.ibm.com",
+            "credential": {
+              "type": "token",
+              "token": "eyJhbGciOiJI...."
+            },
+            "host": {
+              "agent": "python-novaclient",
+              "address": "9.26.27.109"
+            }
+          },
+          "target": {
+            "id": "openstack:07a00f64-4653-11e5-a4fc-3c15c2c1e1ae",
+            "typeURI": "vms\/cloud",
+            "host": {
+              "address": "9.110.51.34"
+            },
+            "name": "\/v2\/56600971-90f3-4370-807f-ab79339381a9\/servers"
+          },
+          "observer": {
+              "name": "EdgeService"
+          },
+          "reporterchain": [
+            {
+              "reporterTime": "2015-08-20T00:07:49.214Z",
+              "role": "relay",
+              "reporterId": "accesstrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae"
+            }
+          ],
+          "attachments": [
+            {
+              "typeURI": "request\/header",
+              "contentType": "json",
+              "content": "..."
+            },
+            {
+              "typeURI": "request\/body",
+              "contentType": "json",
+              "content": "..."
+            },
+            {
+              "typeURI": "response\/header",
+              "contentType": "json",
+              "content": "..."
+            },
+            {
+              "typeURI": "response\/body",
+              "contentType": "json",
+              "content": "..."
+            }
+          ],
+          "tags": [
+            "correlation_id?value=openstack:bcac04dc-e0be-4110-862c-347088a7836a"
+          ]
         }
-      },
-      "target": {
-        "id": "openstack:07a00f64-4653-11e5-a4fc-3c15c2c1e1ae",
-        "typeURI": "vms\/cloud",
-        "host": {
-          "address": "9.110.51.34"
-        },
-        "name": "\/v2\/56600971-90f3-4370-807f-ab79339381a9\/servers"
-      },
-      "observerId": "accesstrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae",
-      "reporterchain": [
-        {
-          "reporterTime": "2015-08-20T00:07:49.214Z",
-          "role": "relay",
-          "reporterId": "accesstrail:e2836bfc-464f-11e5-87d3-3c15c2c1e1ae"
-        }
-      ],
-      "attachments": [
-        {
-          "typeURI": "request\/header",
-          "contentType": "json",
-          "content": "..."
-        },
-        {
-          "typeURI": "request\/body",
-          "contentType": "json",
-          "content": "..."
-        },
-        {
-          "typeURI": "response\/header",
-          "contentType": "json",
-          "content": "..."
-        },
-        {
-          "typeURI": "response\/body",
-          "contentType": "json",
-          "content": "..."
-        }
-      ],
-      "tags": [
-        "correlation_id?value=openstack:bcac04dc-e0be-4110-862c-347088a7836a"
-      ]
-    }
   #+END_SRC
-* About eventType
-  According cadf specification, =actionType= can be:
-  #+BEGIN_EXAMPLE
-  activity, monitor, control
-  #+END_EXAMPLE
-  We use =activity=.
-* About action
+** About eventType
+   According cadf specification, =actionType= can be:
+   #+BEGIN_EXAMPLE
+   activity, monitor, control
+   #+END_EXAMPLE
+   We use =activity=.
+** About action
 
-  Map http method with cadf action as below:
-  |-------------+--------|
-  | HTTP METHOD | ACTION |
-  |-------------+--------|
-  | POST        | create |
-  | PUT         | update |
-  | PATCH       | update |
-  | DELETE      | delete |
-  | HEAD        | read   |
-  | GET         | read   |
-  | OPTIONS     | read   |
+   Map http method with cadf action as below:
+   |-------------+--------|
+   | HTTP METHOD | ACTION |
+   |-------------+--------|
+   | POST        | create |
+   | PUT         | update |
+   | PATCH       | update |
+   | DELETE      | delete |
+   | HEAD        | read   |
+   | GET         | read   |
+   | OPTIONS     | read   |
 
-* About initiator
-  We use initiator to describe the =organization= or =space= which
-  send the request. Here =id= is the orgnization id or space id,
-  =name= is the user name.
-* About attachments
-  We have four attachments defined, for:
-  1. Request header,
-  2. Request body,
-  3. Response header,
-  4. Response body
-  5. latencies
-  6. api
+** About initiator
+   We use initiator to describe the =organization= or =space= which
+   send the request. Here =id= is the orgnization id or space id,
+   =name= is the user name.
+** About attachments
+   We have four attachments defined, for:
+   1. Request header,
+   2. Request body,
+   3. Response header,
+   4. Response body
+
 
