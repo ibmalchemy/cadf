@@ -1,0 +1,5 @@
+[gerrit]
+host=gerrit.swg-devops.com
+port=29418
+project=edge/cadf
+defaultbranch=master
