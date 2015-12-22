@@ -31,6 +31,7 @@ import (
 // | initiator     | Resource       | Yes      | initiator       |
 // | target        | Resource       | Yes      | target          |
 // | observer      | Resource       | Yes      | observer        |
+// | requestPath   | string         | No       | request path    |
 // | reason        | Reason         | No       | reason          |
 // | severity      | string         | No       | event severity  |
 // | name          | string         | No       | event name      |
@@ -50,6 +51,7 @@ type Event struct {
 	Initiator     Resource       `json:"initiator,omitempty"`
 	Target        Resource       `json:"target,omitempty"`
 	Observer      Resource       `json:"observer,omitempty"`
+	RequestPath   string         `json:"requestPath,omitempty"`
 	Reason        Reason         `json:"reason,omitempty"`
 	Severity      string         `json:"severity,omitempty"`
 	Name          string         `json:"name,omitempty"`
